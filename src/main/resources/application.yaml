@@ -1,0 +1,45 @@
+# C�?u hi?nh ????ng d�?n m??c ?i?nh
+server:
+  servlet:
+    context-path: /api
+
+# K�?t n�?i database s?? du?ng mysql
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/beprojectweb
+    username: root
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tranngoctandat12@gmail.com
+    password: yzxkmtvqfmbeveye
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method 
+    tagsSorter: alpha
+    display-request-duration: true
+## tạo
+jwt:
+  signerKey: "2p7zBc3MarCTlKhTx4PkPrFCVNiwJv9tPO0wR6iwZBK31mSBK23+V2CYDXqe8pJl"
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.http.converter.json: DEBUG
+
