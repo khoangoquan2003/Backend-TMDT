@@ -7,6 +7,7 @@ import com.example.beprojectweb.dto.request.VerifyUser;
 import com.example.beprojectweb.dto.response.APIResponse;
 import com.example.beprojectweb.dto.response.AuthenticationResponse;
 import com.example.beprojectweb.dto.response.IntrospectResponse;
+import com.example.beprojectweb.dto.response.UserResponse;
 import com.example.beprojectweb.entity.User;
 import com.example.beprojectweb.service.AuthenticationService;
 import com.example.beprojectweb.service.UserService;
@@ -15,9 +16,11 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.text.ParseException;
 
 @RestController
@@ -72,5 +75,23 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<UserResponse> getUserProfile(Principal principal){
+        User user = (User) authenticationService.loadUserByUsername(principal.getName());
 
+        if(null == user){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        UserResponse userDetailsDto = UserResponse.builder()
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .id(user.getId())
+                .build();
+
+        return new ResponseEntity<>(userDetailsDto, HttpStatus.OK);
+
+    }
 }
