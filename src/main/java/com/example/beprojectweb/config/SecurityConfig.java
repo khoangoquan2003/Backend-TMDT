@@ -16,43 +16,63 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;  // KHÔNG phải reactive
 
 import javax.crypto.spec.SecretKeySpec;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
     @Value("${jwt.signerKey}")
     String signerKey;
     private String[] PUBLIC_ENDPOINTS = {"/users", "/categories", "/products", "/auth/**"};
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity, JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
-        // Cấu hình quyền truy cập api
-        httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(Customizer.withDefaults()) // kích hoạt CORS với bean CorsConfigurationSource
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // Cho phép preflight
+                        .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.GET,"/users").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET,"/users/myInfo", "/cart", "/cart-items", "/cart/user/**").hasRole(Role.USER.name())
+                        .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/users/myInfo", "/cart", "/cart-items", "/cart/user/**").hasRole(Role.USER.name())
                         .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products").permitAll()
-                        .requestMatchers(HttpMethod.DELETE,"/users/**", "/categories/**").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/categories","/categories/**").permitAll()
-                        .anyRequest().authenticated());
-
-        httpSecurity.oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwtConfigurer ->
-                        jwtConfigurer.decoder(jwtDecoder())
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())));
-
-        httpSecurity.csrf(csrf -> csrf.disable());
-        httpSecurity.cors(Customizer.withDefaults());
-        return httpSecurity.build();
+                        .requestMatchers(HttpMethod.DELETE, "/users/**", "/categories/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/categories", "/categories/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt
+                                .decoder(jwtDecoder())
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                        )
+                );
+        return http.build();
     }
 
     @Bean

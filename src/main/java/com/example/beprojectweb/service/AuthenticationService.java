@@ -82,10 +82,11 @@ public class AuthenticationService {
         var token = generateToken(user);
 
         return AuthenticationResponse.builder()
-                .token(token)
                 .authenticated(true)
+                .token(token)
+                .username(user.getUsername())   // gán username
+                .userId(user.getId())            // gán userId
                 .build();
-
     }
 
     public String generateToken(User user){

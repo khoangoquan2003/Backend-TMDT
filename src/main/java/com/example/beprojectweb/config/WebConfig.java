@@ -14,7 +14,7 @@ public class WebConfig  {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Áp dụng cho tất cả API
                         .allowedOrigins("http://localhost:5173") // Cho phép React frontend truy cập
-                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Các phương thức API
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Thêm OPTIONS vào đây
                         .allowCredentials(true);
             }
         };

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)

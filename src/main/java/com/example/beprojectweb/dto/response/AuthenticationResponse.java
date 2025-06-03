@@ -1,14 +1,16 @@
 package com.example.beprojectweb.dto.response;
 
 import lombok.*;
-import lombok.experimental.FieldDefaults;
+
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthenticationResponse {
-    boolean authenticated;
-    String token;
+    private boolean authenticated;
+    private String token;
+    private String username;  // thêm trường username
+    private UUID userId;   // <-- thay Integer thành UUID
 }
