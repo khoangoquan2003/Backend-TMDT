@@ -211,7 +211,6 @@ public class AuthenticationService  implements UserDetailsService {
                 + "</div>"
                 + "</body>"
                 + "</html>";
-
         try {
             emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
         } catch (MessagingException e) {

@@ -6,29 +6,36 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long productId;
+    @GeneratedValue
+    private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cate_ID", referencedColumnName = "cate_ID")
     @JsonBackReference
     Category category;
-    String productName;
+
+    @Column(nullable = false)
+    private String productName;
+
+    @Column
     String description;
-    BigDecimal price;
+
+    @Column(nullable = false)
+    private BigDecimal price;
+
+    @Column
     int stock;
-    String img;
 
-
+    @Column(nullable = true)
+    String imgUrl;
 
 }
