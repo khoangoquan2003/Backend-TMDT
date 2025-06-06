@@ -1,7 +1,5 @@
 package com.example.beprojectweb.dto.response;
 
-import com.example.beprojectweb.entity.Cart;
-import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

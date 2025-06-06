@@ -10,10 +10,12 @@ import com.example.beprojectweb.repository.ProductRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,9 @@ public class ProductService {
     ProductRepository productRepository;
     ProductMapper productMapper;
     CategoryRepository categoryRepository;
+
+
+
 
     public Product createProduct(ProductRequest request) {
         // Kiểm tra xem sản phẩm đã tồn tại theo tên chưa
@@ -54,4 +59,11 @@ public class ProductService {
                 .map(product -> productMapper.toProductResponse(product))
                 .toList();
     }
+
+
+    public Product fetchProductById(UUID id) throws Exception {
+        return productRepository.findById(id).orElseThrow(BadRequestException::new);
+    }
+
+
 }
