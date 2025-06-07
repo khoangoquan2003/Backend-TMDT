@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -16,8 +17,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long cate_ID;
+    @GeneratedValue
+    UUID cate_ID;
     String name;
     String description;
     String urlImage;

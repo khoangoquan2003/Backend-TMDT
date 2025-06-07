@@ -2,6 +2,7 @@ package com.example.beprojectweb.dto.response.product;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -9,12 +10,12 @@ import java.math.BigDecimal;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductResponse {
-    Long productId;
+    UUID productId;
     String categoryName;
     String productName;
     String description;
     BigDecimal price;
     int stock;
-    String img;
+    String imgUrl;
 
 }
