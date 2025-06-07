@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -11,10 +12,11 @@ import java.math.BigDecimal;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductRequest {
+    UUID productId;
     String productName;
     String description;
     BigDecimal price;
     int stock;
-    Long cate_ID;
+    UUID cate_ID;
     String imgUrl;
 }
