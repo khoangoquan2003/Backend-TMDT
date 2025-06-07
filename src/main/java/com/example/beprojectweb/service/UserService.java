@@ -48,12 +48,13 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public UserResponse getMyInfo(){
-        //sau khi đăng nhập thành công thng tin được lưu trong SecurityContextHolder
+    public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
-        User user = userRepository.findByUsername(name).orElseThrow(
-                () -> new AppException(ErrorCode.USER_NOT_EXISTS));
+
+        User user = userRepository.findByUsernameOrEmail(name, name)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+
         return userMapper.toUserResponse(user);
     }
 
