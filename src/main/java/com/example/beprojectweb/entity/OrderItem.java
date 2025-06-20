@@ -19,7 +19,7 @@ public class OrderItem {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_ID", nullable = false)
     @JsonIgnore
     private Product product;
 
