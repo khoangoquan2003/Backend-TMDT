@@ -50,13 +50,13 @@ public class ProductController {
                 .build();
     }
 
-    @GetMapping("/{search}")
-    APIResponse<List<ProductResponse>> search(@PathVariable String search) {
-        return APIResponse.<List<ProductResponse>>builder()
-                .result(productService.getProductsByName(search))
-                .message("Success")
-                .build();
-    }
+//    @GetMapping("/{search}")
+//    APIResponse<List<ProductResponse>> search(@PathVariable String search) {
+//        return APIResponse.<List<ProductResponse>>builder()
+//                .result(productService.getProductsByName(search))
+//                .message("Success")
+//                .build();
+//    }
 
     @GetMapping("/category/{categoryId}")
     APIResponse<List<ProductResponse>> getProductsByCategory(@PathVariable("categoryId") Category category) {

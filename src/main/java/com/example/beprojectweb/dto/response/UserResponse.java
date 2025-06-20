@@ -20,6 +20,7 @@ public class UserResponse {
     String email;
     String verificationCode;
     String phoneNumber;
+    String avatarUrl;
     LocalDateTime verificationCodeExpireAt;
     String dob;
     Set<String> roles;
