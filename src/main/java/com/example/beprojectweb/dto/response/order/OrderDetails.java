@@ -1,6 +1,6 @@
 package com.example.beprojectweb.dto.response.order;
 
-import com.example.beprojectweb.entity.OrderStatus;
+import com.example.beprojectweb.enums.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
