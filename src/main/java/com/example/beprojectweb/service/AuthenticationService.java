@@ -87,8 +87,7 @@ public class AuthenticationService  implements UserDetailsService {
         return AuthenticationResponse.builder()
                 .authenticated(true)
                 .token(token)
-                .username(user.getUsername())   // gán username
-                .userId(user.getId())            // gán userId
+                .userResponse(userMapper.toUserResponse(user)) // gán username
                 .build();
     }
 
