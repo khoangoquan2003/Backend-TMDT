@@ -2,13 +2,14 @@
 server:
   servlet:
     context-path: /api
+  address: 0.0.0.0
 
 # K�?t n�?i database s?? du?ng mysql
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/beprojectweb
     username: root
-    password: 1234
+    password: Trandat123
   jpa:
     hibernate:
       ddl-auto: update
