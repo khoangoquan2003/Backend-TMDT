@@ -41,6 +41,8 @@ public class User implements UserDetails {
     String phoneNumber;
 
     boolean enabled = false;
+    @Column(name = "avatar_url")
+    String avatarUrl;
 
 
     @Column(name = "verification_code")

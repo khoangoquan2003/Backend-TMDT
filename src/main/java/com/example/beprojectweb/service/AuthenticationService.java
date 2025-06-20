@@ -78,6 +78,11 @@ public class AuthenticationService  implements UserDetailsService {
         //sử dụng matches để kiểm tra pass nhập vào đúng với pass trong db
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
+        // check if user is enabled (email verified)
+        if (!user.isEnabled()) {
+            throw new AppException(ErrorCode.USER_NOT_ENABLED);
+        }
+
         //kiểm tra đăng nhập
         if(!authenticated)
             throw new AppException(ErrorCode.UNATHENTICATIED);
