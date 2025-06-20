@@ -1,5 +1,6 @@
 package com.example.beprojectweb.entity;
 
+import com.example.beprojectweb.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;

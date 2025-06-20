@@ -1,4 +1,4 @@
-package com.example.beprojectweb.entity;
+package com.example.beprojectweb.enums;
 
 public enum OrderStatus {
     PENDING,
