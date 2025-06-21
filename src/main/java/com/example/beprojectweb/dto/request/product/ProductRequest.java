@@ -1,5 +1,8 @@
 package com.example.beprojectweb.dto.request.product;
 
+import com.example.beprojectweb.enums.ProductStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,11 +15,13 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductRequest {
-    UUID productId;
     String productName;
     String description;
     BigDecimal price;
     int stock;
     UUID cate_ID;
-    String imgUrl;
+    String urlImage;
+
+    @Enumerated(EnumType.STRING)
+    ProductStatus status;
 }

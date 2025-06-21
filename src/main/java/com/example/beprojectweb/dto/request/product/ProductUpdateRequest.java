@@ -15,6 +15,6 @@ public class ProductUpdateRequest {
     String description;
     BigDecimal price;
     int stock;
-    String img;
+    String urlImage;
     Long cate_ID;
 }
