@@ -25,7 +25,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class    SecurityConfig {
+public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

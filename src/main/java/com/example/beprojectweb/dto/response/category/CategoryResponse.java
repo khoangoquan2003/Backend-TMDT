@@ -5,7 +5,10 @@ import com.example.beprojectweb.entity.Product;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,4 +24,7 @@ public class CategoryResponse {
     String urlImage;
     int count;
     List<ProductResponse> productList;
+
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }
