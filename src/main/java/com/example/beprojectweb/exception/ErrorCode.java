@@ -13,6 +13,8 @@ public enum ErrorCode {
     USER_NOT_ENABLED(1008, "Account is not activated. Please check your email"),
     INVALID_FILE_TYPE(1009, "Invalid File Type"),
     INTERNAL_SERVER_ERROR(1010, "Internal Server Error"),
+    ORDER_NOT_FOUND(1011, "Order not exists"),
+    INVALID_ORDER_STATUS(1012, "Status order not existed")
     ;
 
     private int code;
