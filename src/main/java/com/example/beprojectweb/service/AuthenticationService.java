@@ -78,6 +78,11 @@ public class AuthenticationService  implements UserDetailsService {
         //sử dụng matches để kiểm tra pass nhập vào đúng với pass trong db
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
+        // check if user is enabled (email verified)
+        if (!user.isEnabled()) {
+            throw new AppException(ErrorCode.USER_NOT_ENABLED);
+        }
+
         //kiểm tra đăng nhập
         if(!authenticated)
             throw new AppException(ErrorCode.UNATHENTICATIED);
@@ -87,8 +92,7 @@ public class AuthenticationService  implements UserDetailsService {
         return AuthenticationResponse.builder()
                 .authenticated(true)
                 .token(token)
-                .username(user.getUsername())   // gán username
-                .userId(user.getId())            // gán userId
+                .userResponse(userMapper.toUserResponse(user)) // gán username
                 .build();
     }
 
@@ -211,7 +215,6 @@ public class AuthenticationService  implements UserDetailsService {
                 + "</div>"
                 + "</body>"
                 + "</html>";
-
         try {
             emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
         } catch (MessagingException e) {
@@ -225,9 +228,9 @@ public class AuthenticationService  implements UserDetailsService {
         return String.valueOf(code);
     }
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return (UserDetails) userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+        return userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng: " + usernameOrEmail));
     }
 
 

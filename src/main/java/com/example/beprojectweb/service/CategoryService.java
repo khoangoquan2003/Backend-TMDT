@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.UUID;
 
 import static java.rmi.server.LogStream.log;
 
@@ -47,18 +48,18 @@ public class CategoryService {
                 .toList();
     }
 
-    public CategoryResponse getCategoryById(Long id){
+    public CategoryResponse getCategoryById(UUID id){
         return categoryMapper.toCategoryResponse(categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category not found")));
     }
 
-    public CategoryResponse updateCategory(Long id, CategoryUpdateRequest request){
+    public CategoryResponse updateCategory(UUID id, CategoryUpdateRequest request){
         Category category = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("category not found"));
 
         categoryMapper.updateCategory(category, request);
         return categoryMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
-    public void deleteCategory(Long id){
+    public void deleteCategory(UUID id){
         categoryRepository.deleteById(id);
     }
 

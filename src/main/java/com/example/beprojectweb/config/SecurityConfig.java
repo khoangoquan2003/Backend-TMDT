@@ -60,7 +60,7 @@ public class    SecurityConfig {
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/users/myInfo", "/cart", "/cart-items", "/cart/user/**").hasRole(Role.USER.name())
+                        .requestMatchers(HttpMethod.GET, "/users/myInfo", "/order").hasRole(Role.USER.name())
                         .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/users/**", "/categories/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/categories", "/categories/**").permitAll()

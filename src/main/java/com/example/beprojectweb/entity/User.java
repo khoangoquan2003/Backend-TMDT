@@ -18,39 +18,37 @@ import java.util.*;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User implements UserDetails{
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    UUID id;
 
-    private String username;
+    String username;
 
     @JsonIgnore
-    private String password;
+    String password;
 
-    private String firstName;
+    String firstName;
 
-    private String lastName;
+    String lastName;
 
 
     @Column(unique = true, nullable = false)
-    private String email;
+    String email;
 
     LocalDate dob;
 
     String phoneNumber;
 
     boolean enabled = false;
+    @Column(name = "avatar_url")
+    String avatarUrl;
 
 
     @Column(name = "verification_code")
     String verificationCode;
     @Column(name = "verification_expiration")
     LocalDateTime verificationCodeExpiredAt;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    Cart cart;
 
     @ElementCollection
     Set<String> roles;
@@ -59,6 +57,7 @@ public class User implements UserDetails{
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
     }
+
     @Override
     public String getPassword() {
         return this.password;
@@ -66,7 +65,7 @@ public class User implements UserDetails{
 
     @Override
     public String getUsername() {
-        return this.email;
+        return this.username;
     }
 }
 
