@@ -15,7 +15,6 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "products")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,7 +34,7 @@ public class Product extends AbstractEntity{
     String description;
     BigDecimal price;
     int stock;
-    String imageUrl;
+    String urlImage;
 
     @OneToMany(mappedBy = "product")
     List<Comment> comments = new ArrayList<>();

@@ -12,8 +12,6 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@EntityListeners(AuditingEntityListener.class)
-//@Table(name = "categories")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -29,4 +27,6 @@ public class Category extends AbstractEntity{
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @JsonManagedReference
     List<Product> productList;
+
+
 }
