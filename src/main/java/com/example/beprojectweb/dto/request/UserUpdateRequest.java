@@ -9,8 +9,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateRequest {
-    String username;
     String firstName;
     String lastName;
     String dob;
+    String phoneNumber;
 }
