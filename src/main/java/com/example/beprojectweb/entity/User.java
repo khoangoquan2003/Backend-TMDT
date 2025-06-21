@@ -33,7 +33,7 @@ public class User implements UserDetails {
     String lastName;
 
 
-    @Column(unique = true, nullable = false)
+//    @Column(unique = true, nullable = false)
     String email;
 
     LocalDate dob;
