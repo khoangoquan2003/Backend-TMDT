@@ -1,6 +1,7 @@
 package com.example.beprojectweb.service;
 
 import com.example.beprojectweb.dto.request.product.ProductRequest;
+import com.example.beprojectweb.dto.request.product.ProductUpdateRequest;
 import com.example.beprojectweb.dto.response.product.ProductResponse;
 import com.example.beprojectweb.entity.Category;
 import com.example.beprojectweb.entity.Product;
@@ -11,11 +12,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.apache.coyote.BadRequestException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +30,6 @@ public class ProductService {
     CategoryRepository categoryRepository;
 
 
-
-
     public Product createProduct(ProductRequest request) {
         // Kiểm tra xem sản phẩm đã tồn tại theo tên chưa
         Optional<Product> optionalProduct = productRepository.findByProductName(request.getProductName());
@@ -36,9 +38,6 @@ public class ProductService {
             // Nếu sản phẩm đã tồn tại, cập nhật số lượng tồn kho
             Product existingProduct = optionalProduct.get();
             existingProduct.setStock(existingProduct.getStock() + request.getStock());
-
-            // Có thể cập nhật thêm thông tin khác nếu muốn
-            productMapper.updateProduct(existingProduct, request);
 
             return productRepository.save(existingProduct);
         }
@@ -53,13 +52,54 @@ public class ProductService {
         return productRepository.save(newProduct);
     }
 
+    public ProductResponse updateProduct(UUID id, ProductUpdateRequest request) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        productMapper.updateProduct(product, request);
+        productRepository.save(product);
+        return productMapper.toProductResponse(product);
+    }
+
     public List<ProductResponse> getProducts(){
         return productRepository.findAll()
                 .stream()
-                .map(product -> productMapper.toProductResponse(product))
-                .toList();
+                .map(productMapper::toProductResponse)
+                .collect(Collectors.toList());
     }
 
+    public ProductResponse getProductById(UUID id) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        return  productMapper.toProductResponse(product);
+    }
+
+    public List<ProductResponse> getProductsByCategory(Category category) {
+        return productRepository.findByCategory(category)
+                .stream()
+                .map(productMapper::toProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> getProductsByName(String keyword) {
+        return productRepository.findByProductNameContainingIgnoreCase(keyword)
+                .stream()
+                .map(productMapper::toProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteProduct(UUID id) {
+        productRepository.deleteById(id);
+    }
+
+    public Long countProducts() {
+        return productRepository.count();
+    }
+
+    public List<ProductResponse> getNewProducts(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        List<Product> products = productRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return products.stream()
+                .map(productMapper::toProductResponse)
+                .collect(Collectors.toList());
+    }
 
     public Product fetchProductById(UUID id) throws Exception {
         return productRepository.findById(id).orElseThrow(BadRequestException::new);

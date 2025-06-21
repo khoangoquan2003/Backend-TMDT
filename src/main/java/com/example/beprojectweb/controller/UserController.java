@@ -2,6 +2,7 @@ package com.example.beprojectweb.controller;
 
 import com.example.beprojectweb.dto.request.UserCreationRequest;
 import com.example.beprojectweb.dto.request.UserUpdateRequest;
+import com.example.beprojectweb.dto.request.admin.CreateStaffRequest;
 import com.example.beprojectweb.dto.response.APIResponse;
 import com.example.beprojectweb.dto.response.UserResponse;
 import com.example.beprojectweb.entity.User;
@@ -16,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -60,10 +62,17 @@ public class UserController {
                 .build();
     }
 
-    @PutMapping("/{userId}")
-    APIResponse<UserResponse> updateUser(@PathVariable UUID userId, @RequestBody UserUpdateRequest request) {
+    @PutMapping("/me/update")
+    APIResponse<UserResponse> updateUser( @RequestBody UserUpdateRequest request) {
         return APIResponse.<UserResponse>builder()
-                .result(userService.updateUser(userId, request))
+                .result(userService.updateUser(request))
+                .build();
+    }
+
+    @PostMapping("/me/avatar")
+    public APIResponse<UserResponse> uploadMyAvatar(@RequestParam("file") MultipartFile file) {
+        return APIResponse.<UserResponse>builder()
+                .result(userService.uploadAvatar(file))
                 .build();
     }
 
@@ -71,5 +80,12 @@ public class UserController {
     String deleteUser(@PathVariable UUID userId){
         userService.deleteUser(userId);
         return "User has been deleted";
+    }
+
+    @PostMapping("/create-staff")
+    public APIResponse<UserResponse> createStaff(@RequestBody CreateStaffRequest request) {
+        return APIResponse.<UserResponse>builder()
+                .result(userService.createStaff(request))
+                .build();
     }
 }

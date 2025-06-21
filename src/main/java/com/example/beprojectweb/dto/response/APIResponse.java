@@ -15,4 +15,10 @@ public class APIResponse<T> {
     String message;
     T result;
 
+    @Builder
+    public APIResponse(String message, T result) {
+        this.code = 1000; // Mặc định thành công
+        this.message = message;
+        this.result = result;
+    }
 }
