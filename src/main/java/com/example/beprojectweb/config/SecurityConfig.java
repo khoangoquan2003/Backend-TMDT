@@ -43,7 +43,7 @@ public class    SecurityConfig {
 
     @Value("${jwt.signerKey}")
     String signerKey;
-    private String[] PUBLIC_ENDPOINTS = {"/users", "/categories", "/products", "/auth/**"};
+    private String[] PUBLIC_ENDPOINTS = {"/users", "/categories", "/products", "/auth/**","/order","/addresses/**"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -51,7 +51,7 @@ public class    SecurityConfig {
                 .cors(Customizer.withDefaults()) // kích hoạt CORS với bean CorsConfigurationSource
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // Cho phép preflight
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
@@ -61,9 +61,11 @@ public class    SecurityConfig {
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/users/myInfo", "/order").hasRole(Role.USER.name())
-                        .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products","/addresses/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/users/**", "/categories/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/addresses/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/categories", "/categories/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 )
 

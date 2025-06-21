@@ -15,15 +15,13 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/order")
+@RequestMapping("/order")
 @CrossOrigin
 public class OrderController {
 
 
     @Autowired
     OrderService orderService;
-
-
 
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest, Principal principal) throws Exception {

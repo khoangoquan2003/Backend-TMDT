@@ -35,7 +35,6 @@ public class OrderService {
                 .user(user)
                 .totalAmount(orderRequest.getTotalAmount())
                 .orderDate(orderRequest.getOrderDate())
-                .discount(orderRequest.getDiscount())
                 .expectedDeliveryDate(orderRequest.getExpectedDeliveryDate())
                 .paymentMethod(orderRequest.getPaymentMethod())
                 .orderStatus(OrderStatus.PENDING)

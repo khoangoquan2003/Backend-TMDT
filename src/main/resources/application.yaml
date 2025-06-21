@@ -4,17 +4,19 @@ server:
     context-path: /api
   address: 0.0.0.0
 
-  multipart:
-    max-file-size: 5MB
-    max-request-size: 5MB
+
 
 
 # K�?t n�?i database s?? du?ng mysql
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
   datasource:
     url: jdbc:mysql://localhost:3306/tmdt
     username: root
-    password: 123456
+    password: 1234
   jpa:
     hibernate:
       ddl-auto: update
