@@ -18,10 +18,15 @@ public class OrderDetails {
 
     private UUID id;
     private Date orderDate;
-    private String address;
     private Double totalAmount;
+    private String total; // formatted
     private OrderStatus orderStatus;
-    private String shipmentNumber;
+    private String customer;
+    private String customerEmail;
+    private String customerPhone;
+    private String shippingAddress;
+    private Integer items;
+    private String paymentMethod;
     private Date expectedDeliveryDate;
     private List<OrderItemDetail> orderItemList;
 
