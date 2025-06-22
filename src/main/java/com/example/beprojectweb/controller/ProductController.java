@@ -1,6 +1,7 @@
 package com.example.beprojectweb.controller;
 
 import com.example.beprojectweb.dto.request.product.ProductRequest;
+import com.example.beprojectweb.dto.request.product.ProductUpdateStatus;
 import com.example.beprojectweb.dto.response.APIResponse;
 import com.example.beprojectweb.dto.response.product.ProductResponse;
 import com.example.beprojectweb.entity.Category;
@@ -81,5 +82,14 @@ public class ProductController {
                 .message("Success")
                 .build();
     }
+
+    @PatchMapping("/{productId}/status")
+    APIResponse<ProductResponse> updateProductStatus(@PathVariable UUID productId, @RequestBody ProductUpdateStatus request) {
+        return APIResponse.<ProductResponse>builder()
+                .result(productService.updateProductStatus(productId, request.getStatus()))
+                .message("Success")
+                .build();
+    }
+
 
 }
