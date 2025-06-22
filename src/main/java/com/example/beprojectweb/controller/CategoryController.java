@@ -44,9 +44,13 @@ public class CategoryController {
     }
 
     @PutMapping("/{cate_ID}")
-    public APIResponse<CategoryResponse> updateCategory(@PathVariable UUID cate_ID, CategoryUpdateRequest request){
+    public APIResponse<CategoryResponse> updateCategory(@PathVariable UUID cate_ID, @RequestBody CategoryUpdateRequest request) {
+        // Call the service to update the category and get the response
+        CategoryResponse updatedCategory = categoryService.updateCategory(cate_ID, request);
+
+        // Return the API response with the updated category
         return APIResponse.<CategoryResponse>builder()
-                .result(categoryService.updateCategory(cate_ID, request))
+                .result(updatedCategory)
                 .build();
     }
 

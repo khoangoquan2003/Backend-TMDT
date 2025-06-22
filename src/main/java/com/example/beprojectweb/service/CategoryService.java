@@ -11,6 +11,7 @@ import com.example.beprojectweb.exception.ErrorCode;
 import com.example.beprojectweb.mapper.CategoryMapper;
 import com.example.beprojectweb.mapper.UserMapper;
 import com.example.beprojectweb.repository.CategoryRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -52,11 +53,19 @@ public class CategoryService {
         return categoryMapper.toCategoryResponse(categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category not found")));
     }
 
-    public CategoryResponse updateCategory(UUID id, CategoryUpdateRequest request){
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("category not found"));
+    public CategoryResponse updateCategory(UUID cate_ID, CategoryUpdateRequest request) {
+        // Fetch the existing Category by cate_ID
+        Category existingCategory = categoryRepository.findById(cate_ID)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
-        categoryMapper.updateCategory(category, request);
-        return categoryMapper.toCategoryResponse(categoryRepository.save(category));
+        // Update the existing Category using the mapper
+        categoryMapper.updateCategory(existingCategory, request);
+
+        // Save the updated category back to the repository
+        Category updatedCategory = categoryRepository.save(existingCategory);
+
+        // Convert the updated Category entity to a CategoryResponse
+        return categoryMapper.toCategoryResponse(updatedCategory);
     }
 
     public void deleteCategory(UUID id){
