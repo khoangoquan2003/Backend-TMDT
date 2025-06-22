@@ -127,4 +127,30 @@ public class OrderService {
             throw new RuntimeException("Invalid request");
         }
     }
+    public List<OrderDetails> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+
+        return orders.stream()
+                .map(order -> {
+                    User user = order.getUser(); // lazy nhưng đã ignore json
+
+                    return OrderDetails.builder()
+                            .id(order.getId())
+                            .orderDate(order.getOrderDate())
+                            .orderStatus(order.getOrderStatus())
+                            .totalAmount(order.getTotalAmount())
+                            .total(String.format("%,.0f ₫", order.getTotalAmount())) // format tiền tệ
+                            .customer(user != null ? user.getFullName() : "N/A")
+                            .customerEmail(user != null ? user.getEmail() : "N/A")
+                            .customerPhone(user != null ? user.getPhoneNumber() : "N/A")
+                            .shippingAddress(order.getAddress())
+                            .paymentMethod(order.getPaymentMethod())
+                            .expectedDeliveryDate(order.getExpectedDeliveryDate())
+                            .items(order.getOrderItemList() != null ? order.getOrderItemList().size() : 0)
+                            .orderItemList(getItemDetails(order.getOrderItemList()))
+                            .build();
+                })
+                .toList();
+    }
+
 }
