@@ -5,6 +5,7 @@ import com.example.beprojectweb.dto.request.product.ProductUpdateRequest;
 import com.example.beprojectweb.dto.response.product.ProductResponse;
 import com.example.beprojectweb.entity.Category;
 import com.example.beprojectweb.entity.Product;
+import com.example.beprojectweb.enums.ProductStatus;
 import com.example.beprojectweb.mapper.ProductMapper;
 import com.example.beprojectweb.repository.CategoryRepository;
 import com.example.beprojectweb.repository.ProductRepository;
@@ -43,10 +44,10 @@ public class ProductService {
         }
 
         // Nếu là sản phẩm mới thì phải tìm Category và gán vào trước khi lưu
+        Product newProduct = productMapper.toProduct(request);
         Category category = categoryRepository.findById(request.getCate_ID())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        Product newProduct = productMapper.toProduct(request);
         newProduct.setCategory(category);
 
         return productRepository.save(newProduct);
@@ -86,7 +87,10 @@ public class ProductService {
     }
 
     public void deleteProduct(UUID id) {
-        productRepository.deleteById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm để xoá"));
+        product.setStatus(ProductStatus.INACTIVE);
+        productRepository.save(product);
     }
 
     public Long countProducts() {
@@ -105,5 +109,10 @@ public class ProductService {
         return productRepository.findById(id).orElseThrow(BadRequestException::new);
     }
 
+    public ProductResponse updateProductStatus(UUID id, ProductStatus status) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        product.setStatus(status);
+        return productMapper.toProductResponse(productRepository.save(product));
+    }
 
 }
