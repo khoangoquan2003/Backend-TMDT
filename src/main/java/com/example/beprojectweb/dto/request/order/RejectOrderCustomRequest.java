@@ -5,14 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderItemRequest {
-
-    private UUID productId;
-    private Integer quantity;
+public class RejectOrderCustomRequest {
+    private UUID id;
+    private String reason;
 }
