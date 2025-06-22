@@ -24,8 +24,9 @@ public class Product extends AbstractEntity{
     @Id
     @GeneratedValue
     UUID product_ID;
+
     @ManyToOne
-    @JoinColumn(name = "cate_ID", nullable = false, referencedColumnName = "cate_ID")
+    @JoinColumn(name = "cate_ID", nullable = false) // KHÔNG CẦN referencedColumnName nếu giống
     @JsonBackReference
     Category category;
 
