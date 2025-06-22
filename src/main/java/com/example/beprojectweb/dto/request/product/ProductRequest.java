@@ -21,7 +21,5 @@ public class ProductRequest {
     int stock;
     UUID cate_ID;
     String urlImage;
-
-    @Enumerated(EnumType.STRING)
     ProductStatus status;
 }
