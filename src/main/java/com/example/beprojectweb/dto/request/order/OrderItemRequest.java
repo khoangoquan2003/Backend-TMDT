@@ -14,6 +14,5 @@ import java.util.UUID;
 public class OrderItemRequest {
 
     private UUID productId;
-    private Double discount;
     private Integer quantity;
 }
