@@ -40,4 +40,7 @@ public class OrderCustom {
     OrderCustomStatus status;
 
     LocalDateTime createdAt;
+    @Column
+    private LocalDateTime paidAt;
+
 }
