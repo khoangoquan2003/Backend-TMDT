@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface OrderCustomMapper {
 
-    @Mapping(target = "designFileUrls", expression = "java(splitUrls(order.getDesignFileUrl()))")
+    @Mapping(source = "designFileUrl", target = "designFileUrls")
     @Mapping(target = "status", expression = "java(order.getStatus().name())")
     OrderCustomResponse toOrderResponse(OrderCustom order);
 

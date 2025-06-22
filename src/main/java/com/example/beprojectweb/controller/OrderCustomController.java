@@ -26,9 +26,10 @@ public class OrderCustomController {
     @PostMapping("/create")
     public APIResponse<OrderCustomResponse> createCustomOrder(
             @RequestParam("quantity") int quantity,
-            @RequestPart("file") MultipartFile file) {
+            @RequestParam("description") String description,
+            @RequestPart("files") List<MultipartFile> files) {
         return APIResponse.<OrderCustomResponse>builder()
-                .result(orderCustomService.createCustomOrder(quantity, file))
+                .result(orderCustomService.createCustomOrderWithMultipleFiles(quantity, description,files))
                 .build();
     }
 
