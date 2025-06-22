@@ -162,4 +162,38 @@ public class OrderCustomService {
         return orderCustomMapper.toOrderResponse(orderCustomRepository.save(order));
     }
 
+    @PreAuthorize("hasRole('USER')")
+    public OrderCustomResponse payCustomOrder(UUID id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+
+        OrderCustom order = orderCustomRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        // Chỉ chủ đơn mới được thanh toán
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new AppException(ErrorCode.UNATHENTICATIED);
+        }
+
+        if (order.getStatus() != OrderCustomStatus.AWAITING_PAYMENT) {
+            throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
+        }
+
+        order.setStatus(OrderCustomStatus.PAID);
+        order.setPaidAt(LocalDateTime.now());
+
+        return orderCustomMapper.toOrderResponse(orderCustomRepository.save(order));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public List<OrderCustomResponse> getMyOrdersByStatus(OrderCustomStatus status) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+
+        List<OrderCustom> orders = orderCustomRepository.findByUserAndStatus(user, status);
+        return orders.stream().map(orderCustomMapper::toOrderResponse).toList();
+    }
+
 }
