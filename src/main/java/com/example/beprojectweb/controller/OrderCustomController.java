@@ -4,6 +4,7 @@ import com.example.beprojectweb.dto.request.order.QuoteOrderCustomRequest;
 import com.example.beprojectweb.dto.request.order.RejectOrderCustomRequest;
 import com.example.beprojectweb.dto.response.APIResponse;
 import com.example.beprojectweb.dto.response.order.OrderCustomResponse;
+import com.example.beprojectweb.enums.OrderCustomStatus;
 import com.example.beprojectweb.service.OrderCustomService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +27,10 @@ public class OrderCustomController {
     @PostMapping("/create")
     public APIResponse<OrderCustomResponse> createCustomOrder(
             @RequestParam("quantity") int quantity,
-            @RequestPart("file") MultipartFile file) {
+            @RequestParam("description") String description,
+            @RequestPart("files") List<MultipartFile> files) {
         return APIResponse.<OrderCustomResponse>builder()
-                .result(orderCustomService.createCustomOrder(quantity, file))
+                .result(orderCustomService.createCustomOrderWithMultipleFiles(quantity, description,files))
                 .build();
     }
 
@@ -43,6 +45,13 @@ public class OrderCustomController {
     public APIResponse<List<OrderCustomResponse>> getMyOrders() {
         return APIResponse.<List<OrderCustomResponse>>builder()
                 .result(orderCustomService.getMyOrders())
+                .build();
+    }
+
+    @GetMapping("/me/status")
+    public APIResponse<List<OrderCustomResponse>> getMyOrdersByStatus(@RequestParam OrderCustomStatus status) {
+        return APIResponse.<List<OrderCustomResponse>>builder()
+                .result(orderCustomService.getMyOrdersByStatus(status))
                 .build();
     }
 
@@ -73,6 +82,13 @@ public class OrderCustomController {
     public APIResponse<OrderCustomResponse> confirmQuote(@PathVariable UUID id) {
         return APIResponse.<OrderCustomResponse>builder()
                 .result(orderCustomService.confirmQuote(id))
+                .build();
+    }
+
+    @PostMapping("/{id}/pay")
+    public APIResponse<OrderCustomResponse> payCustomOrder(@PathVariable UUID id) {
+        return APIResponse.<OrderCustomResponse>builder()
+                .result(orderCustomService.payCustomOrder(id))
                 .build();
     }
 }

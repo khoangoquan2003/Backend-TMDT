@@ -21,4 +21,5 @@ public class OrderCustomResponse {
     private String status;
     private LocalDateTime createdAt;
     private BigDecimal quotedPrice;
+    private String description;
 }

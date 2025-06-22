@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,46 +39,53 @@ public class OrderCustomService {
     OrderCustomMapper orderCustomMapper;
 
     @PreAuthorize("hasRole('USER')")
-    public OrderCustomResponse createCustomOrder(int quantity, MultipartFile designFile) {
-        if (designFile.isEmpty() || !designFile.getContentType().startsWith("image/")) {
+    public OrderCustomResponse createCustomOrderWithMultipleFiles(int quantity, String description, List<MultipartFile> designFiles) {
+        if (designFiles.isEmpty()) {
             throw new AppException(ErrorCode.INVALID_FILE_TYPE);
         }
 
-        try {
-            // Lấy thông tin user từ token
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
 
-            // Tạo thư mục nếu chưa có
-            Path root = Paths.get("uploads/designs");
+        List<String> fileUrls = new ArrayList<>();
+        Path root = Paths.get("uploads/designs");
+
+        try {
             Files.createDirectories(root);
 
-            String ext = designFile.getOriginalFilename()
-                    .substring(designFile.getOriginalFilename().lastIndexOf("."));
-            String filename = "design_" + user.getId() + "_" + System.currentTimeMillis() + ext;
-            Path filePath = root.resolve(filename);
-            Files.copy(designFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            for (MultipartFile designFile : designFiles) {
+                if (designFile.isEmpty() || !designFile.getContentType().startsWith("image/")) {
+                    throw new AppException(ErrorCode.INVALID_FILE_TYPE);
+                }
 
-            String fileUrl = "/uploads/designs/" + filename;
+                String ext = designFile.getOriginalFilename()
+                        .substring(designFile.getOriginalFilename().lastIndexOf("."));
+                String filename = "design_" + user.getId() + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + ext;
+                Path filePath = root.resolve(filename);
+                Files.copy(designFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                String fileUrl = "/uploads/designs/" + filename;
 
-            // Tạo đơn hàng
+                fileUrls.add(fileUrl);
+            }
+
             OrderCustom order = OrderCustom.builder()
                     .user(user)
                     .quantity(quantity)
-                    .designFileUrl(fileUrl)
+                    .description(description)
+                    .designFileUrl(fileUrls) // hoặc convert sang JSON nếu thích
                     .status(OrderCustomStatus.PENDING_QUOTE)
                     .createdAt(LocalDateTime.now())
                     .build();
 
             OrderCustom savedOrder = orderCustomRepository.save(order);
-
             return orderCustomMapper.toOrderResponse(savedOrder);
 
         } catch (IOException e) {
             throw new AppException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
 
@@ -98,7 +106,7 @@ public class OrderCustomService {
         return orders.stream().map(orderCustomMapper::toOrderResponse).toList();
     }
 
-    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN', 'USER')")
     public OrderCustomResponse getCustomOrderById(UUID id) {
         OrderCustom order = orderCustomRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
@@ -152,6 +160,40 @@ public class OrderCustomService {
 
         order.setStatus(OrderCustomStatus.AWAITING_PAYMENT);
         return orderCustomMapper.toOrderResponse(orderCustomRepository.save(order));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public OrderCustomResponse payCustomOrder(UUID id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+
+        OrderCustom order = orderCustomRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        // Chỉ chủ đơn mới được thanh toán
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new AppException(ErrorCode.UNATHENTICATIED);
+        }
+
+        if (order.getStatus() != OrderCustomStatus.AWAITING_PAYMENT) {
+            throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
+        }
+
+        order.setStatus(OrderCustomStatus.PAID);
+        order.setPaidAt(LocalDateTime.now());
+
+        return orderCustomMapper.toOrderResponse(orderCustomRepository.save(order));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public List<OrderCustomResponse> getMyOrdersByStatus(OrderCustomStatus status) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+
+        List<OrderCustom> orders = orderCustomRepository.findByUserAndStatus(user, status);
+        return orders.stream().map(orderCustomMapper::toOrderResponse).toList();
     }
 
 }
