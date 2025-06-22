@@ -13,10 +13,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class OrderItemDetail {
-
     private UUID id;
-    private Product product;
-    private UUID productVariantId;
+    private UUID productId;
+    private String productName;
+    private String productImg;
+    private String category;
     private Integer quantity;
     private Double itemPrice;
 }
