@@ -7,6 +7,7 @@ import com.example.beprojectweb.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -39,6 +40,13 @@ public class OrderController {
         List<OrderDetails> orders = orderService.getOrdersByUser(principal.getName());
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<OrderDetails>> getAllOrders() {
+        List<OrderDetails> orders = orderService.getAllOrders();
+        return new ResponseEntity<>(orders, HttpStatus.OK);
+    }
+
 
 }
 
