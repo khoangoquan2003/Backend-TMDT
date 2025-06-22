@@ -18,7 +18,6 @@ public class OrderDetails {
 
     private UUID id;
     private Date orderDate;
-    private String address;
     private Double totalAmount;
     private OrderStatus orderStatus;
     private String shipmentNumber;

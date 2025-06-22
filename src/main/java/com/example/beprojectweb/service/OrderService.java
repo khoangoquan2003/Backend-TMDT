@@ -40,6 +40,7 @@ public class OrderService {
                 .orderStatus(OrderStatus.PENDING)
                 .build();
 
+        // Tạo list OrderItem, mỗi item phải có giá (itemPrice)
         List<OrderItem> orderItems = orderRequest.getOrderItemRequests().stream().map(orderItemRequest -> {
             Product product = null;
             try {
@@ -50,6 +51,7 @@ public class OrderService {
             return OrderItem.builder()
                     .product(product)
                     .quantity(orderItemRequest.getQuantity())
+                    .itemPrice(product.getPrice().doubleValue())
                     .order(order)
                     .build();
         }).toList();
@@ -89,7 +91,6 @@ public class OrderService {
                 .id(order.getId())
                 .orderDate(order.getOrderDate())
                 .orderStatus(order.getOrderStatus())
-                .address(order.getAddress())
                 .totalAmount(order.getTotalAmount())
                 .orderItemList(getItemDetails(order.getOrderItemList()))
                 .expectedDeliveryDate(order.getExpectedDeliveryDate())
@@ -98,14 +99,20 @@ public class OrderService {
     }
 
     private List<OrderItemDetail> getItemDetails(List<OrderItem> orderItemList) {
-        return orderItemList.stream().map(orderItem -> OrderItemDetail.builder()
-                .id(orderItem.getId())
-                .itemPrice(orderItem.getItemPrice())
-                .product(orderItem.getProduct())
-                .quantity(orderItem.getQuantity())
-                .build()
-        ).toList();
+        return orderItemList.stream().map(orderItem -> {
+            Product product = orderItem.getProduct();
+            return OrderItemDetail.builder()
+                    .id(orderItem.getId())
+                    .itemPrice(orderItem.getItemPrice())
+                    .productId(product.getProduct_ID())
+                    .productName(product.getProductName())
+                    .productImg(product.getUrlImage())
+                    .category(product.getCategory() != null ? product.getCategory().getName() : null)
+                    .quantity(orderItem.getQuantity())
+                    .build();
+        }).toList();
     }
+
 
     @Transactional
     public void cancelOrder(UUID id, Principal principal) {
