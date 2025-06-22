@@ -70,6 +70,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/users/**", "/categories/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/addresses/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/categories", "/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 )

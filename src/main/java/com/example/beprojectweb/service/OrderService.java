@@ -120,12 +120,20 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
+
+
+        if (order.getOrderStatus() != OrderStatus.PENDING && order.getOrderStatus() != OrderStatus.CONFIRMED) {
+            throw new RuntimeException("Chỉ được hủy đơn ở trạng thái Chờ xác nhận hoặc Đã xác nhận.");
+        }
+
         if (order.getUser().getId().equals(user.getId())) {
             order.setOrderStatus(OrderStatus.CANCELLED);
             orderRepository.save(order);
         } else {
-            throw new RuntimeException("Invalid request");
+            throw new RuntimeException("Bạn không có quyền hủy đơn hàng này.");
         }
+
+
     }
     public List<OrderDetails> getAllOrders() {
         List<Order> orders = orderRepository.findAll();
