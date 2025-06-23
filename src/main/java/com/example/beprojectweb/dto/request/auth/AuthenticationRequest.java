@@ -1,4 +1,4 @@
-package com.example.beprojectweb.dto.request;
+package com.example.beprojectweb.dto.request.auth;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
