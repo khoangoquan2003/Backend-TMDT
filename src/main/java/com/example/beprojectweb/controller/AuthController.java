@@ -1,9 +1,11 @@
 package com.example.beprojectweb.controller;
 
-import com.example.beprojectweb.dto.request.AuthenticationRequest;
-import com.example.beprojectweb.dto.request.IntrospectRequest;
+import com.example.beprojectweb.dto.request.auth.AuthenticationRequest;
+import com.example.beprojectweb.dto.request.auth.ForgotPasswordRequest;
+import com.example.beprojectweb.dto.request.auth.IntrospectRequest;
 import com.example.beprojectweb.dto.request.UserCreationRequest;
 import com.example.beprojectweb.dto.request.VerifyUser;
+import com.example.beprojectweb.dto.request.auth.ResetPasswordRequest;
 import com.example.beprojectweb.dto.response.APIResponse;
 import com.example.beprojectweb.dto.response.AuthenticationResponse;
 import com.example.beprojectweb.dto.response.IntrospectResponse;
@@ -38,9 +40,10 @@ public class AuthController {
         apiResponse.setResult(authenticationService.createUser(request));
         return apiResponse;
     }
+
     //Tạo endpoint login
     @PostMapping("/login")
-    APIResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
+    APIResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
         return APIResponse.<AuthenticationResponse>builder()
                 .result(result)
@@ -76,10 +79,10 @@ public class AuthController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<UserResponse> getUserProfile(Principal principal){
+    public ResponseEntity<UserResponse> getUserProfile(Principal principal) {
         User user = (User) authenticationService.loadUserByUsername(principal.getName());
 
-        if(null == user){
+        if (null == user) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
@@ -93,5 +96,25 @@ public class AuthController {
 
         return new ResponseEntity<>(userDetailsDto, HttpStatus.OK);
 
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<APIResponse> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authenticationService.forgotPassword(request);
+        return ResponseEntity.ok(APIResponse.builder()
+                .result("Verification code sent to your email.")
+                .build());
+    }
+
+    @PostMapping("/verify-code-reset")
+    public ResponseEntity<APIResponse> verifyCode(@RequestBody VerifyUser request) {
+        authenticationService.verifyForgotPasswordCode(request);
+        return ResponseEntity.ok(APIResponse.builder().result("Code verified. You can now reset your password.").build());
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authenticationService.resetPassword(request);
+        return ResponseEntity.ok("Password updated successfully.");
     }
 }
