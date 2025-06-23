@@ -2,6 +2,7 @@ package com.example.beprojectweb.controller;
 
 import com.example.beprojectweb.dto.request.UserUpdateRequest;
 import com.example.beprojectweb.dto.request.admin.CreateStaffRequest;
+import com.example.beprojectweb.dto.request.auth.ResetPasswordRequest;
 import com.example.beprojectweb.dto.response.APIResponse;
 import com.example.beprojectweb.dto.response.UserResponse;
 import com.example.beprojectweb.service.UserService;
@@ -9,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -80,5 +82,11 @@ public class UserController {
         return APIResponse.<UserResponse>builder()
                 .result(userService.createStaff(request))
                 .build();
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        userService.changePassword(request);
+        return ResponseEntity.ok("Password updated successfully.");
     }
 }
