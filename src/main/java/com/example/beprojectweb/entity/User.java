@@ -1,6 +1,7 @@
 package com.example.beprojectweb.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -55,6 +56,10 @@ public class User implements UserDetails {
 
     @ElementCollection(fetch = FetchType.EAGER)
     Set<String> roles;
+
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference("user-comment")
+    List<Comment> comments;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

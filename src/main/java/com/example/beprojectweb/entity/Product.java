@@ -2,6 +2,7 @@ package com.example.beprojectweb.entity;
 
 import com.example.beprojectweb.enums.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,7 +27,7 @@ public class Product extends AbstractEntity{
     UUID product_ID;
 
     @ManyToOne
-    @JoinColumn(name = "cate_ID", nullable = false) // KHÔNG CẦN referencedColumnName nếu giống
+    @JoinColumn(name = "cate_ID", nullable = false)
     @JsonBackReference
     Category category;
 
@@ -36,9 +37,11 @@ public class Product extends AbstractEntity{
     int stock;
     String urlImage;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonManagedReference
     List<Comment> comments = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     ProductStatus status;
+
 }

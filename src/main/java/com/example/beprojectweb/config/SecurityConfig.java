@@ -28,17 +28,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;  // KHÔNG 
 import javax.crypto.spec.SecretKeySpec;
 import java.util.List;
 
-@RequiredArgsConstructor
+
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-
-    @Value("${jwt.signerKey}")
-    String signerKey;
-    private  String[] PUBLIC_ENDPOINTS = {"/users", "/categories", "/products", "/auth/**", "/order", "/addresses/**"};
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -54,7 +49,9 @@ public class SecurityConfig {
     }
 
 
-
+    @Value("${jwt.signerKey}")
+    String signerKey;
+    private String[] PUBLIC_ENDPOINTS = {"/users", "/categories", "/products", "/auth/**","/order","/addresses/**"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -72,8 +69,8 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/users/myInfo").hasRole(Role.USER.name())
-                        .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products", "/addresses/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/users/myInfo").hasRole(Role.USER.name())
+                     .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products","/addresses/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/users/**", "/categories/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/addresses/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/categories", "/categories/**").permitAll()
@@ -86,14 +83,7 @@ public class SecurityConfig {
                                 .decoder(jwtDecoder())
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                        .successHandler(oAuth2SuccessHandler)
                 );
-
         return http.build();
     }
 
@@ -107,7 +97,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    JwtDecoder jwtDecoder() {
+    JwtDecoder jwtDecoder(){
         SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
 
         return NimbusJwtDecoder
@@ -116,5 +106,9 @@ public class SecurityConfig {
                 .build();
     }
 
-
+    // mã hóa password bằng BCrypt
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10);
+    }
 }
