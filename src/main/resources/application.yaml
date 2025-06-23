@@ -12,9 +12,9 @@ server:
 # K�?t n�?i database s?? du?ng mysql
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/dbtmdt
+    url: jdbc:mysql://localhost:3306/tmdt
     username: root
-    password: 123456
+    password: Trandat123
   jpa:
     hibernate:
       ddl-auto: update
