@@ -1,5 +1,6 @@
 package com.example.beprojectweb.service;
 
+import com.cloudinary.utils.ObjectUtils;
 import com.example.beprojectweb.dto.request.product.ProductRequest;
 import com.example.beprojectweb.dto.request.product.ProductUpdateRequest;
 import com.example.beprojectweb.dto.response.product.ProductResponse;
@@ -16,8 +17,10 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,7 +32,7 @@ public class ProductService {
     ProductRepository productRepository;
     ProductMapper productMapper;
     CategoryRepository categoryRepository;
-
+    CloudinaryService cloudinaryService;
 
     public Product createProduct(ProductRequest request) {
         // Kiểm tra xem sản phẩm đã tồn tại theo tên chưa
@@ -113,6 +116,10 @@ public class ProductService {
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
         product.setStatus(status);
         return productMapper.toProductResponse(productRepository.save(product));
+    }
+
+    public String uploadImageToCloudinary(MultipartFile file) {
+        return cloudinaryService.uploadImage(file);
     }
 
 }

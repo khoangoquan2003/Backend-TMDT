@@ -35,8 +35,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -77,7 +76,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/users").hasAnyRole(Role.ADMIN.name(), Role.STAFF.name())
 
                         // Các endpoint khác:
-                        .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products/**", "/addresses/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products", "/addresses/**").permitAll()
 
                         .requestMatchers(HttpMethod.DELETE, "/users/**", "/categories/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/addresses/**").permitAll()
