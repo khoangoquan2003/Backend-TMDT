@@ -29,12 +29,14 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.List;
 
 
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -75,7 +77,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/users").hasAnyRole(Role.ADMIN.name(), Role.STAFF.name())
 
                         // Các endpoint khác:
-                        .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products", "/addresses/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products/**", "/addresses/**").permitAll()
 
                         .requestMatchers(HttpMethod.DELETE, "/users/**", "/categories/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/addresses/**").permitAll()
@@ -91,6 +93,12 @@ public class SecurityConfig {
                                 .decoder(jwtDecoder())
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2SuccessHandler)
                 );
         return http.build();
     }
@@ -114,9 +122,5 @@ public class SecurityConfig {
                 .build();
     }
 
-    // mã hóa password bằng BCrypt
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
+
 }
