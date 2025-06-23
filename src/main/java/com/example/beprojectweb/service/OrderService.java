@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.*;
 
@@ -160,5 +161,14 @@ public class OrderService {
                 })
                 .toList();
     }
+
+    public Double getTotalRevenueFromCompletedOrders() {
+        List<OrderDetails> orders = getAllOrders(); // Sử dụng lại hàm đã có
+        return orders.stream()
+                .filter(order -> order.getOrderStatus() == OrderStatus.DELIVERED)
+                .mapToDouble(OrderDetails::getTotalAmount)
+                .sum();
+    }
+
 
 }

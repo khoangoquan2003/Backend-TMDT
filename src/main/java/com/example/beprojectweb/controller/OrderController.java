@@ -1,6 +1,7 @@
 package com.example.beprojectweb.controller;
 
 import com.example.beprojectweb.dto.request.order.OrderRequest;
+import com.example.beprojectweb.dto.response.APIResponse;
 import com.example.beprojectweb.dto.response.order.OrderDetails;
 import com.example.beprojectweb.dto.response.order.OrderResponse;
 import com.example.beprojectweb.service.OrderService;
@@ -45,6 +46,18 @@ public class OrderController {
     public ResponseEntity<List<OrderDetails>> getAllOrders() {
         List<OrderDetails> orders = orderService.getAllOrders();
         return new ResponseEntity<>(orders, HttpStatus.OK);
+    }
+
+    @GetMapping("/revenue")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<APIResponse<Double>> getTotalRevenue() {
+        Double revenue = orderService.getTotalRevenueFromCompletedOrders();
+        return ResponseEntity.ok(
+                APIResponse.<Double>builder()
+                        .result(revenue)
+                        .message("Success")
+                        .build()
+        );
     }
 
 
