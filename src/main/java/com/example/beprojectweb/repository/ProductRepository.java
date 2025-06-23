@@ -22,7 +22,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
 
     List<Product> findByCategory(Category category);
 
-    List<Product> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    List<Product> findTop6ByOrderByCreatedAtDesc(Pageable pageable);
 
     List<Product> findByProductNameContainingIgnoreCase(String keyword);
 }
