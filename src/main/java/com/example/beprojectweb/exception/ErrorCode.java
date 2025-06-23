@@ -14,8 +14,10 @@ public enum ErrorCode {
     INVALID_FILE_TYPE(1009, "Invalid File Type"),
     INTERNAL_SERVER_ERROR(1010, "Internal Server Error"),
     ORDER_NOT_FOUND(1011, "Order not exists"),
-    INVALID_ORDER_STATUS(1012, "Status order not existed")
-    ;
+    INVALID_ORDER_STATUS(1012, "Status order not existed"),
+    VERIFICATION_CODE_INVALID(1013, "Code not existed"),
+    VERIFICATION_CODE_EXPIRED(1014, "Code expired" ),
+    PASSWORDS_DO_NOT_MATCH(1015, "Password not true");
 
     private int code;
     private String message;

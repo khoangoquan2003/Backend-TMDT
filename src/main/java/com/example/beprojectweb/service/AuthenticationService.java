@@ -1,12 +1,13 @@
 package com.example.beprojectweb.service;
 
-import com.example.beprojectweb.dto.request.AuthenticationRequest;
-import com.example.beprojectweb.dto.request.IntrospectRequest;
+import com.example.beprojectweb.dto.request.auth.AuthenticationRequest;
+import com.example.beprojectweb.dto.request.auth.ForgotPasswordRequest;
+import com.example.beprojectweb.dto.request.auth.IntrospectRequest;
 import com.example.beprojectweb.dto.request.UserCreationRequest;
 import com.example.beprojectweb.dto.request.VerifyUser;
+import com.example.beprojectweb.dto.request.auth.ResetPasswordRequest;
 import com.example.beprojectweb.dto.response.AuthenticationResponse;
 import com.example.beprojectweb.dto.response.IntrospectResponse;
-import com.example.beprojectweb.dto.response.UserResponse;
 import com.example.beprojectweb.entity.User;
 import com.example.beprojectweb.enums.Role;
 import com.example.beprojectweb.exception.AppException;
@@ -227,11 +228,70 @@ public class AuthenticationService  implements UserDetailsService {
         int code = random.nextInt(900000) + 100000;
         return String.valueOf(code);
     }
+
     @Override
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
         return userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng: " + usernameOrEmail));
     }
+
+    public void forgotPassword(ForgotPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+
+        user.setVerificationCode(generateVerificationCode());
+        user.setVerificationCodeExpiredAt(LocalDateTime.now().plusMinutes(15));
+        user.setResetPasswordVerified(false);
+        userRepository.save(user);
+
+        String subject = "Reset Your Password";
+        String htmlMessage = "<html><body>"
+                + "<h3>Reset Code:</h3>"
+                + "<p><b>" + user.getVerificationCode() + "</b></p>"
+                + "<p>This code will expire in 15 minutes.</p>"
+                + "</body></html>";
+
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to send reset code");
+        }
+    }
+
+    public void verifyForgotPasswordCode(VerifyUser request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+
+        if (user.getVerificationCodeExpiredAt().isBefore(LocalDateTime.now()))
+            throw new AppException(ErrorCode.VERIFICATION_CODE_EXPIRED);
+
+        if (!user.getVerificationCode().equals(request.getVerificationCode()))
+            throw new AppException(ErrorCode.VERIFICATION_CODE_INVALID);
+
+        user.setResetPasswordVerified(true);
+        user.setVerificationCode(null);
+        user.setVerificationCodeExpiredAt(null);
+        userRepository.save(user);
+    }
+
+    public void resetPassword(ResetPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+
+        if (!user.isResetPasswordVerified()) {
+            throw new AppException(ErrorCode.VERIFICATION_CODE_INVALID);
+        }
+
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new AppException(ErrorCode.PASSWORDS_DO_NOT_MATCH);
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setResetPasswordVerified(false);
+        userRepository.save(user);
+    }
+
 
 
 
