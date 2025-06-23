@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,11 +33,9 @@ public class UserController {
 //    }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     APIResponse<List<UserResponse>> getUsers() {
-        var authentication =  SecurityContextHolder.getContext().getAuthentication();
-        log.info("Username: {}", authentication.getName());
-        authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
-        return APIResponse.<List<UserResponse>>builder()    
+        return APIResponse.<List<UserResponse>>builder()
                 .result(userService.getUsers())
                 .build();
     }
