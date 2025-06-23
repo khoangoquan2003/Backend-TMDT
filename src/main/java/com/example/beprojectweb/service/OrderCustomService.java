@@ -187,6 +187,29 @@ public class OrderCustomService {
     }
 
     @PreAuthorize("hasRole('USER')")
+    public OrderCustomResponse cancelOrder(UUID id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+
+        OrderCustom order = orderCustomRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        // Chỉ chủ đơn mới có thể hủy
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new AppException(ErrorCode.UNATHENTICATIED);
+        }
+
+        // Chỉ được hủy nếu chưa thanh toán
+        if (order.getStatus() == OrderCustomStatus.PAID || order.getStatus() == OrderCustomStatus.REJECTED) {
+            throw new AppException(ErrorCode.INVALID_ORDER_STATUS);
+        }
+
+        order.setStatus(OrderCustomStatus.CANCELLED);
+        return orderCustomMapper.toOrderResponse(orderCustomRepository.save(order));
+    }
+
+    @PreAuthorize("hasRole('USER')")
     public List<OrderCustomResponse> getMyOrdersByStatus(OrderCustomStatus status) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username)

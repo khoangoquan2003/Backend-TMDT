@@ -25,4 +25,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
     List<Product> findTop6ByOrderByCreatedAtDesc(Pageable pageable);
 
     List<Product> findByProductNameContainingIgnoreCase(String keyword);
+
+    long count();
 }
