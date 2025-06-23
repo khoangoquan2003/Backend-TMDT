@@ -17,9 +17,12 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Category extends AbstractEntity{
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)  // Cung cấp chiến lược tự động sinh giá trị
+    @Column(name = "cate_ID", columnDefinition = "BINARY(16)")  // Sử dụng kiểu UUID cho cơ sở dữ liệu
     UUID cate_ID;
+
     String name;
     String description;
     String urlImage;

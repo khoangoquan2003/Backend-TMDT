@@ -4,6 +4,7 @@ import com.example.beprojectweb.dto.request.UserCreationRequest;
 import com.example.beprojectweb.dto.request.UserUpdateRequest;
 import com.example.beprojectweb.dto.request.VerifyUser;
 import com.example.beprojectweb.dto.request.admin.CreateStaffRequest;
+import com.example.beprojectweb.dto.request.auth.ResetPasswordRequest;
 import com.example.beprojectweb.dto.response.UserResponse;
 import com.example.beprojectweb.entity.User;
 import com.example.beprojectweb.enums.Role;
@@ -127,6 +128,17 @@ public class UserService {
         return userMapper.toUserResponse(saved);
     }
 
+    @PreAuthorize("hasRole('USER')")
+    public void changePassword(ResetPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
 
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new AppException(ErrorCode.PASSWORDS_DO_NOT_MATCH);
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
 
 }

@@ -29,12 +29,14 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.List;
 
 
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -69,21 +71,34 @@ public class SecurityConfig {
                                 "/webjars/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
-                                .requestMatchers(HttpMethod.GET, "/users/myInfo").hasRole(Role.USER.name())
-                     .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products","/addresses/**").permitAll()
+
+                        // Đường dẫn chi tiết phân quyền:
+                        .requestMatchers(HttpMethod.GET, "/users/myInfo").authenticated()  // hoặc hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/users").hasAnyRole(Role.ADMIN.name(), Role.STAFF.name())
+
+                        // Các endpoint khác:
+                        .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products/**", "/addresses/**").permitAll()
+
                         .requestMatchers(HttpMethod.DELETE, "/users/**", "/categories/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/addresses/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/categories", "/categories/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
+
 
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .decoder(jwtDecoder())
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2SuccessHandler)
                 );
         return http.build();
     }
@@ -106,5 +121,6 @@ public class SecurityConfig {
                 .macAlgorithm(MacAlgorithm.HS512)
                 .build();
     }
+
 
 }

@@ -1,10 +1,8 @@
 package com.example.beprojectweb.dto.request.category;
 
-import com.example.beprojectweb.entity.Product;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
