@@ -47,7 +47,7 @@ public class SecurityConfig {
 
     @Value("${jwt.signerKey}")
     String signerKey;
-    private String[] PUBLIC_ENDPOINTS = {"/users", "/categories", "/products", "/auth/**","/order","/addresses/**"};
+    private String[] PUBLIC_ENDPOINTS = {"/users", "/categories", "/products", "/auth/**","/order","/addresses/**","/comments/**","/comments"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -66,7 +66,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
                                 .requestMatchers(HttpMethod.GET, "/users/myInfo").hasRole(Role.USER.name())
-                     .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products","/addresses/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products","/addresses/**","/comments/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/users/**", "/categories/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/addresses/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/categories", "/categories/**").permitAll()

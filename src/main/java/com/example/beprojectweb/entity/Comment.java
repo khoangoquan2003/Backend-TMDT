@@ -1,27 +1,37 @@
 package com.example.beprojectweb.entity;
 
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Entity
-@Table(name = "comments")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Comment extends AbstractEntity{
+public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long comment_ID;
+    @GeneratedValue
+    UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "product_ID")
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
+    User user;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "product_id", nullable = false)
     Product product;
 
-    Long userId;
-
     String content;
+
+    LocalDateTime createdAt;
 }
