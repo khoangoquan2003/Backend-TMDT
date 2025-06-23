@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -16,5 +17,5 @@ public class ProductUpdateRequest {
     BigDecimal price;
     int stock;
     String urlImage;
-    Long cate_ID;
+    UUID cate_ID;
 }

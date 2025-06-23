@@ -1,6 +1,7 @@
 package com.example.beprojectweb.controller;
 
 import com.example.beprojectweb.dto.request.product.ProductRequest;
+import com.example.beprojectweb.dto.request.product.ProductUpdateRequest;
 import com.example.beprojectweb.dto.request.product.ProductUpdateStatus;
 import com.example.beprojectweb.dto.response.APIResponse;
 import com.example.beprojectweb.dto.response.product.ProductResponse;
@@ -59,6 +60,18 @@ public class ProductController {
 //                .build();
 //    }
 
+    @PutMapping("/{productId}")
+    APIResponse<ProductResponse> updateProduct(
+            @PathVariable("productId") UUID productId,
+            @RequestBody ProductUpdateRequest request
+    ) {
+        return APIResponse.<ProductResponse>builder()
+                .result(productService.updateProduct(productId, request))
+                .message("Success")
+                .build();
+    }
+
+
     @GetMapping("/category/{categoryId}")
     APIResponse<List<ProductResponse>> getProductsByCategory(@PathVariable("categoryId") Category category) {
         return APIResponse.<List<ProductResponse>>builder()
@@ -76,7 +89,7 @@ public class ProductController {
     }
 
     @GetMapping("/newProduct")
-    APIResponse<List<ProductResponse>> getNewProducts(@RequestParam(defaultValue = "10") int limit) {
+    APIResponse<List<ProductResponse>> getNewProducts(@RequestParam(defaultValue = "6") int limit) {
         return APIResponse.<List<ProductResponse>>builder()
                 .result(productService.getNewProducts(limit))
                 .message("Success")

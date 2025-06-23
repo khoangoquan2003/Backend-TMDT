@@ -99,7 +99,7 @@ public class ProductService {
 
     public List<ProductResponse> getNewProducts(int limit) {
         Pageable pageable = PageRequest.of(0, limit);
-        List<Product> products = productRepository.findAllByOrderByCreatedAtDesc(pageable);
+        List<Product> products = productRepository.findTop6ByOrderByCreatedAtDesc(pageable);
         return products.stream()
                 .map(productMapper::toProductResponse)
                 .collect(Collectors.toList());
