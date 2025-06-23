@@ -76,7 +76,6 @@ public class ProductController {
     void deleteProduct(@PathVariable("productId") UUID productId) {
         productService.deleteProduct(productId);
     }
-
     @GetMapping("/{productId}")
     APIResponse<ProductResponse> getProductById(@PathVariable("productId") UUID productId) {
         return APIResponse.<ProductResponse>builder()
@@ -101,11 +100,12 @@ public class ProductController {
             @RequestParam("price") BigDecimal price,
             @RequestParam("stock") int stock,
             @RequestParam("cate_ID") UUID cate_ID,
-            @RequestParam(value = "file", required = false) MultipartFile file
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "urlImage", required = false) String urlImage // 👈 THÊM DÒNG NÀY
     ) {
-        String imageUrl = null;
+        // Nếu có file thì upload và override urlImage
         if (file != null && !file.isEmpty()) {
-            imageUrl = productService.uploadImageToCloudinary(file);
+            urlImage = productService.uploadImageToCloudinary(file);
         }
 
         ProductUpdateRequest request = ProductUpdateRequest.builder()
@@ -114,7 +114,7 @@ public class ProductController {
                 .price(price)
                 .stock(stock)
                 .cate_ID(cate_ID)
-                .urlImage(imageUrl)
+                .urlImage(urlImage) // giữ ảnh cũ hoặc dùng ảnh mới
                 .build();
 
         return APIResponse.<ProductResponse>builder()
