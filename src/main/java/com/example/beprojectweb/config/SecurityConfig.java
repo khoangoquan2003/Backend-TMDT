@@ -114,9 +114,4 @@ public class SecurityConfig {
                 .build();
     }
 
-    // mã hóa password bằng BCrypt
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
 }

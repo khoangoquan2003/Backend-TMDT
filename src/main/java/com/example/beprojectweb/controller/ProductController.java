@@ -6,12 +6,18 @@ import com.example.beprojectweb.dto.request.product.ProductUpdateStatus;
 import com.example.beprojectweb.dto.response.APIResponse;
 import com.example.beprojectweb.dto.response.product.ProductResponse;
 import com.example.beprojectweb.entity.Category;
+import com.example.beprojectweb.entity.Product;
+import com.example.beprojectweb.enums.ProductStatus;
+import com.example.beprojectweb.mapper.ProductMapper;
 import com.example.beprojectweb.service.ProductService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,14 +27,41 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductController {
     ProductService productService;
+    ProductMapper productMapper;
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public APIResponse<ProductResponse> createProduct(
+            @RequestParam("productName") String productName,
+            @RequestParam("description") String description,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("stock") int stock,
+            @RequestParam("cate_ID") UUID cateId,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam("status") ProductStatus status
+    ) {
+        String imageUrl = null;
+        if (file != null && !file.isEmpty()) {
+            imageUrl = productService.uploadImageToCloudinary(file);
+        }
 
-    @PostMapping
-    public APIResponse<ProductResponse> createProduct(@RequestBody ProductRequest request){
-        APIResponse apiResponse = new APIResponse<>();
-        apiResponse.setResult(productService.createProduct(request));
+        ProductRequest request = ProductRequest.builder()
+                .productName(productName)
+                .description(description)
+                .price(price)
+                .stock(stock)
+                .cate_ID(cateId)
+                .urlImage(imageUrl)
+                .status(status)
+                .build();
 
-        return apiResponse;
+        Product product = productService.createProduct(request);
+        ProductResponse created = productMapper.toProductResponse(product);
+        System.out.println("Received cateId: " + cateId);
+
+        return APIResponse.<ProductResponse>builder()
+                .result(created)
+                .build();
     }
+
 
     @GetMapping
     public APIResponse<List<ProductResponse>> getProducts(){
@@ -60,17 +93,35 @@ public class ProductController {
 //                .build();
 //    }
 
-    @PutMapping("/{productId}")
-    APIResponse<ProductResponse> updateProduct(
+    @PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public APIResponse<ProductResponse> updateProductWithImage(
             @PathVariable("productId") UUID productId,
-            @RequestBody ProductUpdateRequest request
+            @RequestParam("productName") String productName,
+            @RequestParam("description") String description,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("stock") int stock,
+            @RequestParam("cate_ID") UUID cate_ID,
+            @RequestParam(value = "file", required = false) MultipartFile file
     ) {
+        String imageUrl = null;
+        if (file != null && !file.isEmpty()) {
+            imageUrl = productService.uploadImageToCloudinary(file);
+        }
+
+        ProductUpdateRequest request = ProductUpdateRequest.builder()
+                .productName(productName)
+                .description(description)
+                .price(price)
+                .stock(stock)
+                .cate_ID(cate_ID)
+                .urlImage(imageUrl)
+                .build();
+
         return APIResponse.<ProductResponse>builder()
                 .result(productService.updateProduct(productId, request))
                 .message("Success")
                 .build();
     }
-
 
     @GetMapping("/category/{categoryId}")
     APIResponse<List<ProductResponse>> getProductsByCategory(@PathVariable("categoryId") Category category) {

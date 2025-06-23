@@ -12,9 +12,9 @@ server:
 # K�?t n�?i database s?? du?ng mysql
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/beprojectweb
+    url: jdbc:mysql://localhost:3306/dbtmdt
     username: root
-    password: 1234
+    password: 123456
   jpa:
     hibernate:
       ddl-auto: update

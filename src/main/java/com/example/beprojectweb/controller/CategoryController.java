@@ -9,7 +9,9 @@ import com.example.beprojectweb.service.CategoryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,13 +23,29 @@ import java.util.UUID;
 public class CategoryController {
     CategoryService categoryService;
 
-    @PostMapping
-    public APIResponse<CategoryResponse> createCategory(@RequestBody CategoryRequest request){
-        APIResponse apiResponse = new APIResponse();
-        apiResponse.setResult(categoryService.createCategory(request));
+    @PostMapping(value = "", consumes = "multipart/form-data")
+    public APIResponse<CategoryResponse> createCategoryWithImage(
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("file") MultipartFile file
+    ) {
+        // Gọi service upload ảnh lên Cloudinary
+        String imageUrl = categoryService.uploadImageToCloudinary(file);
 
-        return apiResponse;
+        // Tạo request DTO
+        CategoryRequest request = CategoryRequest.builder()
+                .name(name)
+                .description(description)
+                .urlImage(imageUrl)
+                .build();
+
+        // Gọi service tạo category
+        CategoryResponse created = categoryService.createCategory(request);
+        return APIResponse.<CategoryResponse>builder()
+                .result(created)
+                .build();
     }
+
 
     @GetMapping
     public APIResponse<List<CategoryResponse>> getCategories() {
@@ -43,16 +61,30 @@ public class CategoryController {
                 .build();
     }
 
-    @PutMapping("/{cate_ID}")
-    public APIResponse<CategoryResponse> updateCategory(@PathVariable UUID cate_ID, @RequestBody CategoryUpdateRequest request) {
-        // Call the service to update the category and get the response
-        CategoryResponse updatedCategory = categoryService.updateCategory(cate_ID, request);
+    @PutMapping(value = "/{cate_ID}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public APIResponse<CategoryResponse> updateCategoryWithImage(
+            @PathVariable UUID cate_ID,
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam(value = "file", required = false) MultipartFile file
+    ) {
+        String imageUrl = null;
+        if (file != null && !file.isEmpty()) {
+            imageUrl = categoryService.uploadImageToCloudinary(file);
+        }
 
-        // Return the API response with the updated category
+        CategoryUpdateRequest request = CategoryUpdateRequest.builder()
+                .name(name)
+                .description(description)
+                .urlImage(imageUrl)
+                .build();
+
+        CategoryResponse updatedCategory = categoryService.updateCategory(cate_ID, request);
         return APIResponse.<CategoryResponse>builder()
                 .result(updatedCategory)
                 .build();
     }
+
 
     @DeleteMapping("/{cate_ID}")
     public String deleteCategory(@PathVariable UUID cate_ID){
