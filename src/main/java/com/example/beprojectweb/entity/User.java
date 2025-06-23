@@ -50,7 +50,10 @@ public class User implements UserDetails {
     @Column(name = "verification_expiration")
     LocalDateTime verificationCodeExpiredAt;
 
-    @ElementCollection
+    @Column(name = "reset_password_verified", nullable = false)
+    boolean resetPasswordVerified = false;
+
+    @ElementCollection(fetch = FetchType.EAGER)
     Set<String> roles;
 
     @Override
