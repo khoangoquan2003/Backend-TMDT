@@ -91,4 +91,11 @@ public class OrderCustomController {
                 .result(orderCustomService.payCustomOrder(id))
                 .build();
     }
+
+    @PutMapping("/{id}/cancel")
+    public APIResponse<OrderCustomResponse> cancelOrder(@PathVariable UUID id) {
+        return APIResponse.<OrderCustomResponse>builder()
+                .result(orderCustomService.cancelOrder(id))
+                .build();
+    }
 }

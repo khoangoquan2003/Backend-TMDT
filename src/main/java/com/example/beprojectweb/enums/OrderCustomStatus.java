@@ -6,5 +6,5 @@ public enum OrderCustomStatus {
     AWAITING_PAYMENT,// Người dùng xác nhận đang chờ thanh toán
     PAID,            // Đã thanh toán
     REJECTED,        // Admin từ chối
-    CANCELED         // Người dùng hủy
+    CANCELLED         // Người dùng hủy
 }
