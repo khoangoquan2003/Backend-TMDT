@@ -49,5 +49,11 @@ public class AddressService {
         // Lấy danh sách Address của user
         return addressRepository.findAllByUser(user);
     }
+
+    public Address getAddressById(UUID addressId) {
+        return addressRepository.findById(addressId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ với ID: " + addressId));
+    }
+
 }
 

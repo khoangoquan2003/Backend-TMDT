@@ -36,6 +36,8 @@ import java.util.List;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -73,7 +75,7 @@ public class SecurityConfig {
 
                         // Đường dẫn chi tiết phân quyền:
                         .requestMatchers(HttpMethod.GET, "/users/myInfo").authenticated()  // hoặc hasRole("USER")
-                        .requestMatchers(HttpMethod.GET, "/users").hasAnyRole(Role.ADMIN.name(), Role.STAFF.name())
+                        .requestMatchers(HttpMethod.GET, "/users","/addresses/**").hasAnyRole(Role.ADMIN.name(), Role.STAFF.name())
 
                         // Các endpoint khác:
                         .requestMatchers(HttpMethod.GET, "/categories", "/categories/**", "/products", "/addresses/**").permitAll()

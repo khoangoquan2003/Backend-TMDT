@@ -34,6 +34,7 @@ public class OrderService {
 
         Order order = Order.builder()
                 .user(user)
+                .address(orderRequest.getAddressId())
                 .totalAmount(orderRequest.getTotalAmount())
                 .orderDate(orderRequest.getOrderDate())
                 .expectedDeliveryDate(orderRequest.getExpectedDeliveryDate())
