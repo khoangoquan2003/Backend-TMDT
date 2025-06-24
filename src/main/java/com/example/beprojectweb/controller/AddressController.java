@@ -39,4 +39,11 @@ public class AddressController {
         List<Address> addresses = addressService.getAddressesByUser(principal);
         return ResponseEntity.ok(addresses);
     }
+    // Lấy địa chỉ theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Address> getAddressById(@PathVariable("id") UUID addressId) {
+        Address address = addressService.getAddressById(addressId);
+        return ResponseEntity.ok(address);
+    }
+
 }
