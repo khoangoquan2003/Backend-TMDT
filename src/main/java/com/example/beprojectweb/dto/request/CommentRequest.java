@@ -1,8 +1,6 @@
 package com.example.beprojectweb.dto.request;
 
-
 import lombok.*;
-
 import java.util.UUID;
 
 @Getter
@@ -11,6 +9,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class CommentRequest {
-    UUID productId;
-    String content;
+    private UUID productId;
+    private String content;
+    private int rating;  // thêm trường rating (số nguyên)
 }

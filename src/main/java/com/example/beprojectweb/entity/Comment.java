@@ -34,4 +34,7 @@ public class Comment {
     String content;
 
     LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private Integer rating;
 }

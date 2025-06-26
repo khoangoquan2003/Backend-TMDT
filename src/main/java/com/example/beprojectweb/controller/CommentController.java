@@ -2,6 +2,7 @@ package com.example.beprojectweb.controller;
 
 import com.example.beprojectweb.dto.request.CommentRequest;
 import com.example.beprojectweb.dto.response.CommentResponse;
+import com.example.beprojectweb.dto.response.comment.CommentWithAverageResponse;
 import com.example.beprojectweb.entity.Comment;
 import com.example.beprojectweb.entity.User;
 import com.example.beprojectweb.service.CommentService;
@@ -27,14 +28,30 @@ public class CommentController {
         return ResponseEntity.ok(toResponse(comment));
     }
 
+
     @GetMapping("/product/{productId}")
-    public ResponseEntity<List<CommentResponse>> getByProduct(@PathVariable UUID productId) {
+    public ResponseEntity<CommentWithAverageResponse> getByProduct(@PathVariable UUID productId) {
         List<Comment> comments = commentService.getCommentsByProduct(productId);
+
         List<CommentResponse> responseList = comments.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(responseList);
+
+        // Tính điểm trung bình, bỏ qua comment không có rating (null)
+        double averageRating = comments.stream()
+                .filter(c -> c.getRating() != null)
+                .mapToInt(Comment::getRating)
+                .average()
+                .orElse(0.0);
+
+        CommentWithAverageResponse response = CommentWithAverageResponse.builder()
+                .averageRating(averageRating)
+                .comments(responseList)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
+
 
     private CommentResponse toResponse(Comment comment) {
         User user = comment.getUser();
@@ -42,6 +59,7 @@ public class CommentController {
         return CommentResponse.builder()
                 .id(comment.getId().toString())
                 .content(comment.getContent())
+                .rating(comment.getRating() != null ? comment.getRating() : 0)
                 .createdAt(comment.getCreatedAt())
                 .user(CommentResponse.UserInfo.builder()
                         .fullName(user.getFullName())
@@ -49,4 +67,6 @@ public class CommentController {
                         .build())
                 .build();
     }
+
+
 }
