@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 public class CommentResponse {
     private String id;
     private String content;
+    private int rating;              // Thêm trường rating
     private LocalDateTime createdAt;
-
     private UserInfo user;
 
     @Data
@@ -21,4 +21,3 @@ public class CommentResponse {
         private String avatarUrl;
     }
 }
-

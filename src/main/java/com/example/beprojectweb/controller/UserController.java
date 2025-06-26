@@ -35,7 +35,7 @@ public class UserController {
 //    }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER') or hasRole('STAFF')")
     APIResponse<List<UserResponse>> getUsers() {
         return APIResponse.<List<UserResponse>>builder()
                 .result(userService.getUsers())

@@ -41,6 +41,7 @@ public class CommentService {
                 .user(user)
                 .product(product)
                 .content(request.getContent())
+                .rating(request.getRating()) // <-- thêm dòng này để lưu rating
                 .createdAt(LocalDateTime.now())
                 .build();
 
